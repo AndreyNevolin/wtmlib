@@ -51,11 +51,11 @@ reliability considerations):
     Here:  
     - `conv_params` is a structure storing the conversion parameters  
     - `secs_before_wrap` is the number of seconds remaining before the earliest TSC
-    wrap. TSC counter is stored in a microprocessor register of limited width. Thus,
-    its value "wraps" from time to time (starts from zero after reaching the maximum).
-    It's adviced to ensure before starting actual time measurements that they can
-    be completed before TSC on some of the available CPUs wraps. Another option is to
-    track TSC wraps in the client code and behave accordingly
+    wrap. TSC counter leaves in a microprocessor register of limited width. Thus, its
+    value "wraps" from time to time (starts from zero after reaching the maximum). It's
+    adviced to ensure before starting actual time measurements that they will be completed
+    before TSC on some of the available CPUs wraps. Another option is to track TSC wraps
+    in the client code and behave accordingly
 4. get TSC value at the beggining of measured time interval:
     ```
     start_tsc_val = WTMLIB_GET_TSC();
@@ -77,13 +77,14 @@ reliability considerations):
 NOTE: if you don't need to convert TSC ticks to nanoseconds, you may omit steps 3 and 6.
 There exist - at least - two good scenarios when you don't need to convert TSC ticks to
 nanoseconds on the fly:
-    1. you are interested not in absolute values of time intervals, but only in how
-    different intervals relate to each other
-    2. "online" conversion is not a requirement. In this case, you can first measure all
-    time intervals in TSC ticks (storing these ticks somewhere for further processing).
-    And later - when all the measurements have already been taken - TSC ticks may be
-    converted to nanoseconds without any rush by using "slow" floating-point arithmetics
-    or something
+
+1. you are interested not in absolute values of time intervals, but only in how
+different intervals relate to each other
+2. "online" conversion is not a requirement. In this case, you can first measure all
+time intervals in TSC ticks (storing these ticks somewhere for further processing).
+And later - when all the measurements have already been taken - TSC ticks may be
+converted to nanoseconds without any rush by using "slow" floating-point arithmetics
+or something
 
 See file `example.c` for the detailed examples of using all the library interfaces.
 
