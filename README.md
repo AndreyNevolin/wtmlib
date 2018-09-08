@@ -37,25 +37,25 @@ reliability considerations):
     ```
 
     Here:  
-        - `tsc_max_shift` is a maximum estimated shift between TSC counters running on
-        different CPUs  
-        - `is_monotonic` indicates whether TSC values collected one after another on
-        same or different CPUs monotonically increase  
-        - `err_msg` is a pointer to a buffer where human-readable error message will be
-        stored (if the pointer is non-zero) in case of error
+    - `tsc_max_shift` is a maximum estimated shift between TSC counters running on
+    different CPUs  
+    - `is_monotonic` indicates whether TSC values collected one after another on
+    same or different CPUs monotonically increase  
+    - `err_msg` is a pointer to a buffer where human-readable error message will be
+    stored (if the pointer is non-zero) in case of error
 3. pre-calculate parameters needed to convert TSC ticks to nanoseconds on the fly:
     ```
     ret = wtmlib_GetTSCToNsecConversionParams( &conv_params, &secs_before_wrap, err_msg,
                                                sizeof( err_msg));
     ```
     Here:  
-        - `conv_params` is a structure storing the conversion parameters  
-        - `secs_before_wrap` is the number of seconds remaining before the earliest TSC
-        wrap. TSC counter is stored in a microprocessor register of limited width. Thus,
-        its value "wraps" from time to time (starts from zero after reaching the maximum).
-        It's adviced to ensure before starting actual time measurements that they can
-        be completed before TSC on some of the available CPUs wraps. Another option is to
-        track TSC wraps in the client code and behave accordingly
+    - `conv_params` is a structure storing the conversion parameters  
+    - `secs_before_wrap` is the number of seconds remaining before the earliest TSC
+    wrap. TSC counter is stored in a microprocessor register of limited width. Thus,
+    its value "wraps" from time to time (starts from zero after reaching the maximum).
+    It's adviced to ensure before starting actual time measurements that they can
+    be completed before TSC on some of the available CPUs wraps. Another option is to
+    track TSC wraps in the client code and behave accordingly
 4. get TSC value at the beggining of measured time interval:
     ```
     start_tsc_val = WTMLIB_GET_TSC();
@@ -70,9 +70,9 @@ reliability considerations):
     ```
 
     Here:  
-        - `start_tsc_val` and `end_tsc_val` are the values collected at steps 4 and
-        5  
-        - `conv_params` holds conversion parameters pre-calculated at step 3
+    - `start_tsc_val` and `end_tsc_val` are the values collected at steps 4 and
+    5  
+    - `conv_params` holds conversion parameters pre-calculated at step 3
 
 NOTE: if you don't need to convert TSC ticks to nanoseconds, you may omit steps 3 and 6.
 There exist - at least - two good scenarios when you don't need to convert TSC ticks to
