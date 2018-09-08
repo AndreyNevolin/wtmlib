@@ -17,7 +17,7 @@ arithmetic
 Here is a list of major capabilities provided by the library:
 
 1. evaluation of reliability of TSC
-2. reading current value of TSC
+2. reading current TSC value
 3. conversion of elapsed TSC ticks to nanoseconds
 
 The library builds on Linux only. Only x86 architecture is supported for now. Support for
@@ -35,7 +35,7 @@ reliability considerations):
     ret = wtmlib_EvalTSCReliabilityCOP( &tsc_max_shift, &is_monotonic, err_msg,
                                         sizeof( err_msg));
     ```
-    Here:
+    Here:  
         ```tsc_max_shift``` is a maximum estimated shift between TSC counters running on
         different CPUs
 
@@ -49,7 +49,7 @@ reliability considerations):
     ret = wtmlib_GetTSCToNsecConversionParams( &conv_params, &secs_before_wrap, err_msg,
                                                sizeof( err_msg));
     ```
-    Here:
+    Here:  
         ```conv_params``` is a structure storing the conversion parameters
 
         ```secs_before_wrap``` is the number of seconds remaining befor the earliest TSC
@@ -70,7 +70,7 @@ reliability considerations):
     ```
     nsecs = WTMLIB_TSC_TO_NSEC( end_tsc_val - start_tsc_val, &conv_params));
     ```
-    Here:
+    Here:  
         ```start_tsc_val``` and ```end_tsc_val``` are the values collected at steps 4 and
         5
 
