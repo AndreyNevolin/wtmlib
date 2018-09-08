@@ -53,7 +53,7 @@ reliability considerations):
     - `secs_before_wrap` is the number of seconds remaining before the earliest TSC
     wrap. TSC counter leaves in a microprocessor register of limited width. Thus, its
     value "wraps" from time to time (starts from zero after reaching the maximum). It's
-    adviced to ensure before starting actual time measurements that they will be completed
+    advised to ensure before starting actual time measurements that they will be completed
     before TSC on some of the available CPUs wraps. Another option is to track TSC wraps
     in the client code and behave accordingly
 4. get TSC value at the beggining of measured time interval:
