@@ -91,6 +91,28 @@ See file `example.c` for the detailed examples of using all the library interfac
 See `src/wtmlib.h` for the API signatures, parameter descriptions, error codes, and
 so on.
 
+## Further usage notes
+1. When converting TSC ticks to nanoseconds on the flight, please make sure that
+pre-calculated conversion parameters can be found in cache (or even better - in CPU
+registers) each time they are needed. Only in this case will the conversion procedure
+be really efficient
+2. `WTMLIB_GET_TSC()` is not protected from reordering. Neither from reordering done
+by compiler, nor from reordering done at CPU level. Currently it is client's
+responsibility to ensure that `WTMLIB_GET_TSC()` is properly ordered with the surrounding
+code
+3. When evaluating TSC reliability and pre-calculating TSC-to-nanoseconds conversion
+parameters, the library considers only CPUs that are allowed by a CPU affinity mask of a
+thread from which the library was called. WTMLIB assumes that time intervals will be
+measured on those CPUs only and doesn't take all other CPUs into account. To see how it
+works you may do the following:
+```
+make log
+make example
+taskset -c 1,7,13 ./example
+```
+You will see that WTMLIB will collect data only on CPUs 1, 7, and 13 (of course, if CPUs
+with these IDs do exist in your system).
+
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
  * Twitter: @Andrey_Nevolin
