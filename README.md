@@ -1,6 +1,14 @@
 # Wall-clock Time Measurement library (WTMLIB)
 
 
+## Table of contents
+- [Description](#description)
+- [How to use](#how-to-use)
+- [Further usage notes](#further-usage-notes)
+- [Building](#building)
+- [Design and implementation](#design-and-implementation)
+- [License](#license)
+
 ## Description
 The library allows measuring wall-clock time intervals with nanosecond precision
 and very low overhead (also at nanosecond scale).
@@ -147,6 +155,8 @@ make example
 ```
 The example doesn't require any input parameters. Simply type `./example` and watch the
 output
+
+## Design and implementation
 
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
