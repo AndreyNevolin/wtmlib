@@ -105,13 +105,13 @@ parameters, the library considers only CPUs that are allowed by a CPU affinity m
 thread from which the library was called. WTMLIB assumes that time intervals will be
 measured on those CPUs only and doesn't take all other CPUs into account. To see how it
 works you may do the following:
-```
-make log
-make example
-taskset -c 1,7,13 ./example
-```
-You will see that WTMLIB will collect data only on CPUs 1, 7, and 13 (of course, if CPUs
-with these IDs do exist in your system).
+    ```
+    make log
+    make example
+    taskset -c 1,7,13 ./example
+    ```
+    You will see that WTMLIB will collect data only on CPUs 1, 7, and 13 (of course, if CPUs
+    with these IDs do exist in your system).
 
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
