@@ -133,7 +133,7 @@ Several build modes are available:
 1. `make` builds release version of the library
 2. `make log` builds a version that prints log messages to `stdout` while running. Logging
 doesn't affect performance-critical sections of the library. There can be log prints
-around them but never inside. Thus, a client can trust to calculation results produced by
+around them but never inside. Thus, a client can trust calculation results produced by
 this version
 3. `make debug` builds a version with internal consistency checks enabled. Some of these
 checks do can be found inside performance-critical sections of the code. This build mode
@@ -141,7 +141,7 @@ is not meant for generating trusted calculation results, but for the purpose of 
 bugs in the code
 4. `make log_debug` combines `log` and `debug` modes
 
-After building the library you may also build an example code. Just run:
+After building the library you may also build example code. Just run:
 ```
 make example
 ```
