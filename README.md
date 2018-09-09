@@ -113,6 +113,41 @@ works you may do the following:
     You will see that WTMLIB will collect data only on CPUs 1, 7, and 13 (of course, if CPUs
     with these IDs do exist in your system).
 
+## Building
+There are two recommended ways of building WTMLIB:
+1. build it as a standalone shared library (`.so`) using provided `Makefile`. Then link
+client code with the library in a usual way
+2. copy WTMLIB's complete source code to your project and build it as part of the project.
+For example, you could first compile the library into a regular object file and then
+statically link this object file with other object files in your project into a single
+executable (or whatever you're trying to produce).
+
+The second way is really viable because WTMLIB is small. Just one `c` file and two
+headers. If you go this way, you may borrow command lines needed to compile the library
+from the provided `Makefile`.
+
+Examples given below in this section assume that the library needs to be packaged as a
+standalone `.so` file.
+
+Several build modes are available:
+1. `make` builds release version of the library
+2. `make log` builds a version that prints log messages to `stdout` while running. Logging
+doesn't affect performance-critical sections of the library. There can be log prints
+around them but never inside. Thus, a client can trust to calculation results produced by
+this version
+3. `make debug` builds a version with internal consistency checks enabled. Some of these
+checks do can be found inside performance-critical sections of the code. This build mode
+is not meant for generating trusted calculation results, but for the purpose of finding
+bugs in the code
+4. `make log_debug` combines `log` and `debug` modes
+
+After building the library you may also build an example code. Just run:
+```
+make example
+```
+The example doesn't require any input parameters. Simply type `./example` and watch the
+output
+
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
  * Twitter: @Andrey_Nevolin
