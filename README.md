@@ -157,6 +157,59 @@ The example doesn't require any input parameters. Simply type `./example` and wa
 output
 
 ## Design and implementation
+Using Time Stamp Counters for measuring wall-clock time promises high resolution and low
+performance overhead. But in some cases TSC cannot serve as a reliable time source, or
+its use for this purporse may be challenging. Possible reasons for that are:
+1. frequency at which TSC increments may vary in time on some systems
+2. TSCs may increment at different pace on different CPUs present in the system
+3. there may exist a "shift" between TSCs running on different CPUs
+
+Let us illustrate the third concern by an example. Assume there are two CPUs in the
+system: CPU1 and CPU2. Assume next that TSC on CPU1 lags behind TSC on CPU2 by an
+equivalent of 5 seconds. Suppose then that some thread running on the system needs to
+measure duration of its own calculations. To do that it first reads TSC, then starts the
+calculations, and after they finish it reads TSC again. If the thread spends all its life
+on a single CPU, then everything is ok. But what if it reads start TSC value on CPU1, and
+then it is moved in the middle of computation to CPU2, and the second TSC value is read on
+CPU2? In this case the calculations will appear 5 seconds longer than they actually are.
+
+The other two concerns can be illustrated in a similar way.
+
+One or more of the three problems listed above do can be found on some systems. And as a
+consequence, it will be impossible to use TSC as a reliable time source on some of those
+systems. But on other systems "suffering" from the listed problems TSC does can serve as
+a reliable time source. That becomes possible because of the following CPU architectural
+features:
+1. the hardware may provide an interrupt to software whenever the update frequency of TSC
+changes, and a means to determine what the current update frequency is. Alternatively, the
+update frequency of TSC may be under control of the system software. (See "Power ISA
+Version 2.06 Revision B, Book II, Chapter 5")
+2. the hardware may allow reading TSC value along with the corresponding CPU ID. (See
+Intel's RDTSCP instruction. "Intel 64 and IA-32 Architectures Software Developer's
+Manual", Volume 2)
+3. on some systems software can adjust the value of time-stamp counter of every logical
+CPU. (See Intel's WRMSR instruction and IA32_TIME_STAMP_COUNTER register. "Intel® 64 and
+IA-32 Architectures Software Developer's Manual", Volume 3)
+
+There is more to learn about time-stamp counters on different architectures. For example:
+1. some architectures do not guarantee that TSC will necessarily provide high resolution
+2. some architectures provide direct run-time information about TSC reliability
+
+But the most valuable fact about TSC is the following: **modern hardware and operating
+systems do tend to ensure that**:
+1. TSC runs at the same pace on every CPU in the system
+2. this pace doesn't change in time
+3. there is no shift between TSCs running on different CPUs
+
+WTMLIB is designed for such systems. It doesn't exploit deep hardware features of various
+CPU architectures. Instead, it has a purely imperical focus:
+1. WTMLIB allows experimentally verify reliability of TSC
+2. it also allows exprimentally compute parameters required to efficiently convert TSC
+ticks to nanoseconds
+3. naturally, WTMLIB also provides convenient interfaces for reading TSC and converting
+TSC ticks to nanoseconds on the fly
+
+Let's first look at how WTMLIB assesses TSC reliability.
 
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
