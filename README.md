@@ -224,8 +224,9 @@ process. The idea here is the following:
     - when a shift relative to the base CPU is known for each available CPU, it is
       straightforward to calculate the maximum possible shift between time-stamp counters
       running on the available CPUs
-Then a client can decide whether it finds the estimated maximum shift appropriate for its
-tasks.
+
+    Then a client can decide whether it finds the estimated maximum shift appropriate for
+    its tasks.
 
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
