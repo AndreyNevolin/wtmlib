@@ -209,7 +209,23 @@ ticks to nanoseconds
 3. naturally, WTMLIB also provides convenient interfaces for reading TSC and converting
 TSC ticks to nanoseconds on the fly
 
-Let's first look at how WTMLIB assesses TSC reliability.
+Let's first look at how WTMLIB allows assessing TSC reliability.
+
+WTMLIB provides an interface for calculating two estimations:
+1. maximum shift between time-stamp counters running on different CPUs available to the
+process. The idea here is the following:
+    - one of the CPUs is chosen as "base"
+    - then the library iterates over all other CPUs and for each of them estimates a
+      shift: `TSC_on_current_CPU - TSC_on_base_CPU`. The estimation is based on a fact
+      that if `TSC_on_base_CPU_1`, `TSC_on_current_CPU`, `TSC_on_base_CPU_2` were
+      successively measured, then the shift defined above must belong to the range
+      `[TSC_on_current_CPU - TSC_on_base_CPU_2, TSC_on_current_CPU - TSC_on_base_CPU_1]`
+      (assuming that TSCs run at the same pace on both CPUs)
+    - when a shift relative to the base CPU is known for each available CPU, it is
+      straightforward to calculate the maximum possible shift between time-stamp counters
+      running on the available CPUs
+Then a client can decide whether it finds the estimated maximum shift appropriate for its
+tasks.
 
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
