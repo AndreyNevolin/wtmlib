@@ -230,7 +230,7 @@ process. The algorithm in outline is the following:
 2. whether TSC values measured successively on same/different CPUs monotonically increase.
 The idea behind this estimation is the following. Assume several CPUs. Assume next that
 they have synchronized clocks ticking at the same pace. If someone measures time on one
-of those CPUs and then repeats this operation - on arbitrary of the CPUs - then the second
+of those CPUs and then measures time again - on arbitrary of the CPUs - then the second
 time value must be bigger than the first one.
 
     If `N` CPUs are available to the process, then clock synchronicity across the CPUs can
