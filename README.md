@@ -253,9 +253,11 @@ time value must be bigger than the first one.
     - get TSC on CPU_2. It must be 112
     - 2 ticks passed
     - get TSC on CPU_3. It must be 214
+
     So far the clocks do look synchronized. But let's measure time on CPU_1 again:
     - 2 ticks passed
-    - get TSC on CPU_1. It must be 16  
+    - get TSC on CPU_1. It must be 16
+
     Oooops! Monotonicity breaks. Thus, measuring first and last time values on the same
     CPU is important for detecting more or less big shifts between the clocks. Of course,
     the next question is "what does 'more or less big' mean"? Well, it depends on how much
