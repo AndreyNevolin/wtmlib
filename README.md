@@ -213,7 +213,7 @@ Let's first look at how WTMLIB allows assessing TSC reliability.
 
 WTMLIB provides an interface for calculating two estimations:
 1. maximum shift between time-stamp counters running on different CPUs available to the
-process. The idea here is the following:
+process. The algorithm in outline is the following:
     - one of the CPUs is chosen as "base"
     - then the library iterates over all other CPUs and for each of them estimates a
       shift: `TSC_on_current_CPU - TSC_on_base_CPU`. The estimation is based on a fact
@@ -225,8 +225,45 @@ process. The idea here is the following:
       straightforward to calculate the maximum possible shift between time-stamp counters
       running on the available CPUs
 
-    Then a client can decide whether it finds the estimated maximum shift appropriate for
-    its tasks.
+    When a client has this estimation it can decide whether it finds the calculated
+    maximum shift appropriate for its purporses.
+2. whether TSC values measured successively on same/different CPUs monotonically increase.
+The idea behind this estimation is the following. Assume several CPUs. Assume next that
+they have synchronized clocks ticking at the same pace. If someone measures time on one
+of those CPUs and then repeats this operation - on arbitrary of the CPUs - then the second
+time value must be bigger than the first one.
+
+    If `N` CPUs are available to the process, then clock synchronicity across the CPUs can
+    be assessed in the following way:
+    - measure TSC value on CPU_1
+    - measure TSC value on CPU_2
+    - ...
+    - measure TSC value on CPU_N
+    - measure TSC value on CPU_1 again
+    - check whether the measured values monotonically increase
+
+    This is a basic outline for how WTMLIB assesses clock synchronicity across the CPUs.
+
+    Measuring the first and last values on the same CPU is really important here. Let's
+    see why. Assume there are 3 CPUs. Assume next that TSC on CPU_2 is shifted by +100
+    ticks relative to CPU_1. And TSC on CPU_3 is shifted by +100 ticks relative to CPU_2.
+    Consider the following sequence of events:
+    - get TSC on CPU_1. Let it be 10
+    - 2 ticks passed
+    - get TSC on CPU_2. It must be 112
+    - 2 ticks passed
+    - get TSC on CPU_3. It must be 214
+    So far the clocks do look synchronized. But let's measure time on CPU_1 again:
+    - 2 ticks passed
+    - get TSC on CPU_1. It must be 16  
+    Oooops! Monotonicity breaks. Thus, measuring first and last time values on the same
+    CPU is important for detecting more or less big shifts between the clocks. Of course,
+    the next question is "what does 'more or less big' mean"? Well, it depends on how much
+    time passes between successive TSC measurements. In our example the measurements were
+    separated by just 2 TSC ticks. Clock shifts bigger than 2 ticks will be detected.
+    In general, clock shifts that are smaller than time that passes between successive
+    measurements will not be detected.
+    Thus, the "denser" measurements are the better. More on that below.
 
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
