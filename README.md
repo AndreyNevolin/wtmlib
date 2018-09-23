@@ -276,8 +276,8 @@ simple reliability checks, e.g:
 Accuracy of "maximum shift" and "TSC monotonicity" estimations produced using the
 algorithms outlined above highly depends on how close to each other in time are TSC
 measurements taken on different CPUs. The "denser" are the measurements,
-    - the lower is the "maximum shift" bound
-    - the more trusted is "monotonicity" check
+- the lower is the "maximum shift" bound
+- the more trusted is "monotonicity" check
 
 WTMLIB actually provides two interfaces for evaluating TSC reliability. Both of them rely
 on the methods outlined above. The both produce estimations of the same type. What differs
