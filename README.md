@@ -375,17 +375,17 @@ number such that `factor = 2 ^ shift`.
 
 It only remains to note that instead of `ticks_per_ns` WTMLIB uses
 `tsc_per_sec / 1000000000`. `tsc_per_sec` is obtained by means of direct measurements:
-- WTMLIB measures how many TSC ticks passes during a "predefined time period"
+- WTMLIB measures how many TSC ticks pass during a "predefined time period"
 - this "predefined time period" may be smaller than, equal to, or bigger than 1 second
-- the "predifined time period is tracked using system calls
+- the "predefined time period" is tracked using system calls
 - since the "predefined time period" may not be equal to 1 second, the measured number
 of ticks is scaled to 1 second
-- several `tsc_per_nsec` values are measured in this way
+- several `tsc_per_sec` values are measured in this way
 - then the collected values get "cleaned" from statistical noise to produce a single
 trusted value
 
 That's it. This section gives mostly outline of the algorithms implemented in WTMLIB.
-There is a lot of details, as always. Please refer to the source code for the in-depth
+There is a lot of details, as always. Please, refer to the source code for the in-depth
 explanations. There is A LOT of comments in the code. You'll find there not only the
 detailed explanations of all the algorithms, but also some useful discussions.
 
