@@ -94,10 +94,11 @@ And later - when all the measurements have already been taken - TSC ticks may be
 converted to nanoseconds without any rush by using "slow" floating-point arithmetics
 or something
 
-See file `example.c` for the detailed examples of using all the library interfaces.
+See file [example.c](example.c) for the detailed examples of using all the library
+interfaces.
 
-See `src/wtmlib.h` for the API signatures, parameter descriptions, error codes, and
-so on.
+See [src/wtmlib.h](src/wtmlib.h) for the API signatures, parameter descriptions, error
+codes, and so on.
 
 ## Further usage notes
 1. When converting TSC ticks to nanoseconds on the flight, please make sure that
@@ -266,6 +267,128 @@ time value must be bigger than the first one.
     In general, clock shifts that are smaller than time that passes between successive
     measurements will not be detected.
     Thus, the "denser" measurements are the better. More on that below.
+
+While calculating TSC reliability metrics explained above, WTMLIB also makes several more
+simple reliability checks, e.g:
+    - a limited check of whether TSC counters run at the same pace on different CPUs
+    - whether TSC counters do change in time and don't just stay constant
+
+Accuracy of "maximum shift" and "TSC monotonicity" estimations produced using the
+algorithms outlined above highly depends on how close to each other in time are TSC
+measurements taken on different CPUs. The "denser" are the measurements,
+    - the lower is the "maximum shift" bound
+    - the more trusted is "monotonicity" check
+
+WTMLIB actually provides two interfaces for evaluating TSC reliability. Both of them rely
+on the methods outlined above. The both produce estimations of the same type. What differs
+significantly is the method used to collect TSC data.
+
+1. `wtmlib_EvalTSCReliabilityCPUSW()`
+    "CPUSW" in the name of the interface stands for "CPU Switching". If one calls this
+    function, then all the data required to produce TSC reliability estimations will be
+    collected by a single thread jumping from one CPU to another.
+
+    `wtmlib_EvalTSCReliabilityCPUSW()` was implemented mostly for fun. It is not
+    recommended for production use, since the time needed to move a thread from one CPU
+    to another is pretty big. Thus, too much time passes between successive TSC
+    measurements, and the accuracy of the estimations is low.
+
+    Some of the advantages of "CPU Switching" data collection method are:
+    - it is absolutely deterministic. If one needs to successively read TSC values on CPUs
+    CPU1, CPU2, CPU3, then he/she can easily do that (first switch to CPU1, read TSC, then
+    switch to CPU2, read TSC there, and finally switch to CPU3 and read TSC there)
+    - supposedly, time needed to switch between CPUs in the system must not grow too fast
+    even if the number of CPUs grows rapidly. Theoretically, there may exist a system - a
+    pretty big system - where the use of the method may be justified. But currently it is
+    very unlikely
+2. `wtmlib_EvalTSCReliabilityCOP()`
+    "COP" in the name stands for "CAS-ordered probes". All the required data is collected
+    by concurrently running threads. One thread per each available CPU. The measurements
+    taken be the threads are sequentially ordered by means of compare-and-swap operation.
+
+    `wtmlib_EvalTSCReliabilityCOP()` is preferred for evaluating TSC realiability. It
+    gives pretty nice accuraccy.
+
+    But the method of "CAS-ordered probes" does have a small disadvantage:
+    - it is non-deterministic. It doesn't allow taking successive TSC measurements in a
+    predefined CPU order. Instead, a long sequence of TSC values must be collected at
+    random, and then the algorithms will try to find in this sequence the values measured
+    on the appropriate CPUs.
+
+    Threoretically, on enormously big systems, the method may give poor results because
+    the contention between the CPUs will be very intense, and it will be hard to produce a
+    TSC sequence with good statistical properties. But currently such situation is
+    unlikely.
+
+    WTMLIB assesses statistical quality of TSC sequences produced using the method of
+    "CAS-ordered probes". It is possible to set an acceptable level of statistical
+    significance. The library provides several pretty simple controls for that. Please,
+    refer to file [src/wtmlib_config.h](src/wtmlib_config.h) where all the configuration
+    parameters of the library live.
+
+Now, when we discussed evaluation of TSC reliability, let's lalk a bit about`the second
+big purporse of the library: on-the-fly conversion of TSC ticks to nanoseconds. The
+implemented method is borrowed from FIO and in outline is the following:
+1. TSC ticks that are to be converted to nanoseconds are split into two parts:  
+    `tsc_ticks = k * modulus + remainder`  
+    `modulus` is a number of ticks that corresponds to some pre-defined time period  
+    `modulus` is chosen to be a power of 2, so that `k * modulus` could be extracted from
+    `tsc_ticks` using a binary shift, and `remainder` could be extracted using a bitmask
+2. `k * modulus` worth of the ticks is converted to nanoseconds using integer
+multiplication. WTMLIB pre-computes the number of nanoseconds "sitting" inside `modulus`
+ticks. Thus, to convert `k * modulus` ticks to nanoseconds one only needs to multiply this
+pre-computed value by `k`
+3. `remainder` is converted to nanoseconds using integer multiply-shift arithmetic and
+several pre-computed values
+
+Let's now see what the conversion procedure for remainder looks like. The same formula
+is also used to pre-compute the nanosecond worth of `modulus` ticks.
+
+We start with the following trivial formula: `ns_time = tsc_ticks / tsc_per_ns`.
+
+We want to use integer arithmetic only. But `tsc_per_ns` is small. If, for example, it is
+3.333 and we take its integer part - just 3 - the precision will suffer significantly.
+Thus, we introduce a big "factor":
+```
+ns_time = (tsc_ticks * factor) / (ticks_per_ns * factor)
+```
+Or, after rearranging:
+```
+ns_time = (tsc_ticks * factor / ticks_per_ns) / factor
+```
+Next, we pre-compute `mult = factor / ticks_per_ns)`, and the formula turns into:
+```
+ns_time = (tsc_ticks * mult) / factor
+```
+`factor` must satisfy three requirements:
+1. it must be "big enough" to ensure good accuracy
+2. multiplication `tsc_ticks * mult` must not result in 64-bit overflow, as long as
+`tsc_ticks` is smaller then or equal to `modulus`
+3. it must be a power of 2, so that slow integer division can be replaced by a fast binary
+shift
+
+This is how `factor` is chosen by WTMLIB. After that the nanosecond worth of `remainder`
+can be calculated in the following way: `(remainder * mult) << shift`, where `shift` is a
+number such that `factor = 2 ^ shift`.
+
+It only remains to note that instead of `ticks_per_ns` WTMLIB uses
+`tsc_per_sec / 1000000000`. `tsc_per_sec` is obtained by means of direct measurements:
+    - WTMLIB measures how many TSC ticks passes during a "predefined time period"
+    - this "predefined time period" may be smaller than, equal to, or bigger than 1 second
+    - the "predifined time period is tracked using system calls
+    - since the "predefined time period" may not be equal to 1 second, the measured number
+    of ticks is scaled to 1 second
+    - several `tsc_per_nsec` values are measured in this way
+    - then the collected values get "cleaned" from statistical noise to produce a single
+    trusted value
+
+That's it. This section gives mostly outline of the algorithms implemented in WTMLIB.
+There is a lot of details, as always. Please refer to the source code for the in-depth
+explanations. There is A LOT of comments in the code. You'll find there not only the
+detailed explanations of all the algorithms, but also some useful discussions.
+
+All the controls over the library (again, with the detailed explanations) can be found in
+[src/wtmlib_config.h](src/wtmlib_config.h).
 
 ## License
 Copyright © 2018 Andrey Nevolin, https://github.com/AndreyNevolin
