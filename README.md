@@ -284,6 +284,7 @@ on the methods outlined above. The both produce estimations of the same type. Wh
 significantly is the method used to collect TSC data.
 
 1. `wtmlib_EvalTSCReliabilityCPUSW()`
+
     "CPUSW" in the name of the interface stands for "CPU Switching". If one calls this
     function, then all the data required to produce TSC reliability estimations will be
     collected by a single thread jumping from one CPU to another.
@@ -302,6 +303,7 @@ significantly is the method used to collect TSC data.
     pretty big system - where the use of the method may be justified. But currently it is
     very unlikely
 2. `wtmlib_EvalTSCReliabilityCOP()`
+
     "COP" in the name stands for "CAS-ordered probes". All the required data is collected
     by concurrently running threads. One thread per each available CPU. The measurements
     taken be the threads are sequentially ordered by means of compare-and-swap operation.
