@@ -270,8 +270,8 @@ time value must be bigger than the first one.
 
 While calculating TSC reliability metrics explained above, WTMLIB also makes several more
 simple reliability checks, e.g:
-    - a limited check of whether TSC counters run at the same pace on different CPUs
-    - whether TSC counters do change in time and don't just stay constant
+- a limited check of whether TSC counters run at the same pace on different CPUs
+- whether TSC counters do change in time and don't just stay constant
 
 Accuracy of "maximum shift" and "TSC monotonicity" estimations produced using the
 algorithms outlined above highly depends on how close to each other in time are TSC
