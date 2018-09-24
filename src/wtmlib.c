@@ -1749,7 +1749,7 @@ static int wtmlib_CheckTSCProbesConsistency( wtmlib_TSCProbe_t **tsc_probes,
        test.
        This check is really important. If all TSC values are equal, then both TSC "delta"
        ranges and TSC monotonicity will be perfect, but at the same time TSC would be
-       absolutel inappropriate for measuring wall-clock time. (Global TSC monotonicity
+       absolutely inappropriate for measuring wall-clock time. (Global TSC monotonicity
        evaluation and some other monotonicity checks existing in the library will give the
        positive result because they don't require successively measured TSC values to
        strictly grow. Overall, WTMLIB's requirements with respect to TSC monotonicity are

@@ -139,12 +139,16 @@ typedef struct
  *      tsc_range_length - estimated maximum shift between TSC counters running on
  *                         different CPUs
  *      is_monotonic - whether TSC values measured successively on same or different CPUs
- *                     monotonically increase
+ *                     monotonically increase. If the function sets (*is_monotonic) to
+ *                     "false", that doesn't necessarily imply that TSCs are unreliable.
+ *                     In rare cases the observed non-monotonicity may be a result of TSC
+ *                     wrap that occured on one/several CPUs right before or just in the
+ *                     middle of the computations
  *      err_msg - human-readable error message
  *
  * Any of the pointer arguments can be zero.
  * In case of non-zero return code, the function doesn't modify memory referenced by
- * tsc_range_length and is_monotonic.
+ * tsc_range_length and is_monotonic pointers.
  * err_msg is modified only if the return code is non-zero
  *
  * NOTE: if the function sets is_monotonic to "false", that doesn't necessarily imply that
@@ -172,12 +176,16 @@ int wtmlib_EvalTSCReliabilityCPUSW( int64_t *tsc_range_length, bool *is_monotoni
  *      tsc_range_length - estimated maximum shift between TSC counters running on
  *                         different CPUs
  *      is_monotonic - whether TSC values measured successively on same or different CPUs
- *                     monotonically increase
+ *                     monotonically increase. If the function sets (*is_monotonic) to
+ *                     "false", that doesn't necessarily imply that TSCs are unreliable.
+ *                     In rare cases the observed non-monotonicity may be a result of TSC
+ *                     wrap that occured on one/several CPUs right before or just in the
+ *                     middle of the computations
  *      err_msg - human-readable error message
  *
  * Any of the pointer arguments can be zero.
  * In case of non-zero return code, the function doesn't modify memory referenced by
- * tsc_range_length and is_monotonic.
+ * tsc_range_length and is_monotonic pointers.
  * err_msg is modified only if the return code is non-zero
  */
 int wtmlib_EvalTSCReliabilityCOP( int64_t *tsc_range_length, bool *is_monotonic,
