@@ -457,6 +457,59 @@ static int wtmlib_CollectTSCInCPUCarousel( cpu_set_t **cpu_sets,
     return 0;
 }
 
+/**
+ * Generic evaluation of consistency of TSC values collected in a CPU carousel
+ */
+static int wtmlib_CheckCarouselValsConsistency( uint64_t **tsc_vals,
+                                                int num_avail_cpus,
+                                                uint64_t num_rounds,
+                                                char *err_msg,
+                                                int err_msg_size)
+{
+    WTMLIB_ASSERT( tsc_vals);
+
+    /* Make sure that collected TSC values do vary on each of the CPUs. That may not be
+       true, for example, in case when some CPUs consistently return "zero" for every TSC
+       test.
+       This check is really important. If all TSC values are equal, then both TSC "delta"
+       ranges and TSC monotonicity will be perfect, but at the same time TSC would be
+       absolutely inappropriate for measuring wall-clock time. (Global TSC monotonicity
+       evaluation and some other monotonicity checks existing in the library will give the
+       positive result because they don't require successively measured TSC values to
+       strictly grow. Overall, WTMLIB's requirements with respect to TSC monotonicity are
+       the following: TSC values must grow on a global scale and not decrease locally.
+       I.e. the library allows some successively measured TSC values to be equal to each
+       other) */
+    const char *equal_vals_err_msg = "First and last TSC values collected on a CPU with "
+                                     "index %d are equal";
+
+    /* Separate check for a CPU with index "zero". Because there must be an extra value
+       measured on this CPU */
+    WTMLIB_ASSERT( tsc_vals[0]);
+
+    if ( tsc_vals[0][0] == tsc_vals[0][num_rounds] )
+    {
+        WTMLIB_BUFF_MSG( err_msg, err_msg_size, equal_vals_err_msg, 0);
+
+        return WTMLIB_RET_TSC_INCONSISTENCY;
+    }
+
+    /* Check TSC values collected on all other CPUs */
+    for ( int i = 1; i < num_avail_cpus; i++ )
+    {
+        WTMLIB_ASSERT( tsc_vals[i]);
+
+        if ( tsc_vals[i][0] == tsc_vals[i][num_rounds - 1] )
+        {
+            WTMLIB_BUFF_MSG( err_msg, err_msg_size, equal_vals_err_msg, i);
+
+            return WTMLIB_RET_TSC_INCONSISTENCY;
+        }
+    }
+
+    return 0;
+}
+
 /*
  * Calculate bounds of a shift between TSC on the given CPU and TSC on the base CPU
  * (assuming that TSC values were collected using CPU carousel method)
@@ -489,6 +542,12 @@ static int wtmlib_CalcTSCDeltaRangeCPUSW( uint64_t **tsc_vals,
     int64_t d_min = INT64_MIN, d_max = INT64_MAX;
 
     WTMLIB_OUT( "\t\tCalculating shift between TSC counters of the two given CPUs...\n");
+
+    if ( wtmlib_CheckCarouselValsConsistency( tsc_vals, 2, num_rounds,
+                                              err_msg, err_msg_size) )
+    {
+        return WTMLIB_RET_TSC_INCONSISTENCY;
+    }
 
     for ( int i = 0; i < num_rounds; i++ )
     {
@@ -951,8 +1010,14 @@ static int wtmlib_EvalTSCMonotonicityCPUSW( int num_cpus,
 
 #ifdef WTMLIB_LOG
     wtmlib_PrintCarouselSamples( num_cpus_avail, tsc_vals,
-                                 WTMLIB_CALC_TSC_RANGE_ROUND_COUNT, "\t\t");
+                                 WTMLIB_EVAL_TSC_MONOTCTY_ROUND_COUNT, "\t\t");
 #endif
+    ret = wtmlib_CheckCarouselValsConsistency( tsc_vals, num_cpus_avail,
+                                               WTMLIB_EVAL_TSC_MONOTCTY_ROUND_COUNT,
+                                               err_msg, err_msg_size);
+
+    if ( ret ) goto eval_tsc_monotonicity_cpusw_out;
+
     /* Check whether collected TSC values monotonically increase */
     prev_tsc_val = tsc_vals[0][0];
 
@@ -1758,6 +1823,8 @@ static int wtmlib_CheckTSCProbesConsistency( wtmlib_TSCProbe_t **tsc_probes,
        other) */
     for ( int i = 0; i < num_avail_cpus; i++ )
     {
+        WTMLIB_ASSERT( tsc_probes[i]);
+
         if ( tsc_probes[i][0].tsc_val == tsc_probes[i][num_probes - 1].tsc_val )
         {
             WTMLIB_BUFF_MSG( err_msg, err_msg_size, "First and last TSC probes collected "
