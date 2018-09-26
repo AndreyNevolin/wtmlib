@@ -205,7 +205,7 @@ systems do tend to ensure that**:
 WTMLIB is designed for such systems. It doesn't exploit deep hardware features of various
 CPU architectures. Instead, it has a purely imperical focus:
 1. WTMLIB allows experimentally verify reliability of TSC
-2. it also allows exprimentally compute parameters required to efficiently convert TSC
+2. it also allows experimentally compute parameters required to efficiently convert TSC
 ticks to nanoseconds
 3. naturally, WTMLIB also provides convenient interfaces for reading TSC and converting
 TSC ticks to nanoseconds on the fly
