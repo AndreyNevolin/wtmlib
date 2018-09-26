@@ -328,7 +328,7 @@ significantly is the method used to collect TSC data.
     refer to file [src/wtmlib_config.h](src/wtmlib_config.h) where all the configuration
     parameters of the library live.
 
-Now, when we discussed evaluation of TSC reliability, let's lalk a bit about`the second
+Now, when we discussed evaluation of TSC reliability, let's lalk a bit about the second
 big purporse of the library: on-the-fly conversion of TSC ticks to nanoseconds. The
 implemented method is borrowed from [fio](https://github.com/axboe/fio) and in outline is
 the following:
