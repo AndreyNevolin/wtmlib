@@ -119,8 +119,8 @@ works you may do the following:
     make example
     taskset -c 1,7,13 ./example
     ```
-    You will see that WTMLIB will collect data only on CPUs 1, 7, and 13 (of course, if CPUs
-    with these IDs do exist in your system).
+    You will see that WTMLIB will collect data only on CPUs 1, 7, and 13 (of course, if
+    CPUs with these IDs do exist in your system).
 
 ## Building
 There are two recommended ways of building WTMLIB:
@@ -330,7 +330,8 @@ significantly is the method used to collect TSC data.
 
 Now, when we discussed evaluation of TSC reliability, let's lalk a bit about`the second
 big purporse of the library: on-the-fly conversion of TSC ticks to nanoseconds. The
-implemented method is borrowed from FIO and in outline is the following:
+implemented method is borrowed from [fio](https://github.com/axboe/fio) and in outline is
+the following:
 1. TSC ticks that are to be converted to nanoseconds are split into two parts:  
     `tsc_ticks = k * modulus + remainder`  
     `modulus` is a number of ticks that corresponds to some pre-defined time period  
