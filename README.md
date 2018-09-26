@@ -236,28 +236,28 @@ time value must be bigger than the first one.
 
     If `N` CPUs are available to the process, then clock synchronicity across the CPUs can
     be assessed in the following way:
-    - measure TSC value on CPU_1
-    - measure TSC value on CPU_2
+    - measure TSC value on CPU1
+    - measure TSC value on CPU2
     - ...
-    - measure TSC value on CPU_N
-    - measure TSC value on CPU_1 again
+    - measure TSC value on CPUN
+    - measure TSC value on CPU1 again
     - check whether the measured values monotonically increase
 
     This is a basic outline for how WTMLIB assesses clock synchronicity across the CPUs.
 
     Measuring the first and last values on the same CPU is really important here. Let's
-    see why. Assume there are 3 CPUs. Assume next that TSC on CPU_2 is shifted by +100
-    ticks relative to CPU_1. And TSC on CPU_3 is shifted by +100 ticks relative to CPU_2.
+    see why. Assume there are 3 CPUs. Assume next that TSC on CPU2 is shifted by +100
+    ticks relative to CPU1. And TSC on CPU3 is shifted by +100 ticks relative to CPU2.
     Consider the following sequence of events:
-    - get TSC on CPU_1. Let it be 10
+    - get TSC on CPU1. Let it be 10
     - 2 ticks passed
-    - get TSC on CPU_2. It must be 112
+    - get TSC on CPU2. It must be 112
     - 2 ticks passed
-    - get TSC on CPU_3. It must be 214
+    - get TSC on CPU3. It must be 214
 
-    So far the clocks do look synchronized. But let's measure time on CPU_1 again:
+    So far the clocks do look synchronized. But let's measure time on CPU1 again:
     - 2 ticks passed
-    - get TSC on CPU_1. It must be 16
+    - get TSC on CPU1. It must be 16
 
     Oooops! Monotonicity breaks. Thus, measuring first and last time values on the same
     CPU is important for detecting more or less big shifts between the clocks. Of course,
