@@ -371,8 +371,8 @@ ns_time = (tsc_ticks * mult) / factor
 shift
 
 This is how `factor` is chosen by WTMLIB. After that the nanosecond worth of `remainder`
-can be calculated in the following way: `(remainder * mult) << shift`, where `shift` is a
-number such that `factor = 2 ^ shift`.
+can be calculated in the following way: `(remainder * mult) >> shift`, where `shift` is
+such a number that `factor = 2 ^ shift`.
 
 It only remains to note that instead of `ticks_per_ns` WTMLIB uses
 `tsc_per_sec / 1000000000`. `tsc_per_sec` is obtained by means of direct measurements:
