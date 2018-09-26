@@ -101,7 +101,7 @@ See [src/wtmlib.h](src/wtmlib.h) for the API signatures, parameter descriptions,
 codes, and so on.
 
 ## Further usage notes
-1. When converting TSC ticks to nanoseconds on the flight, please make sure that
+1. When converting TSC ticks to nanoseconds on the fly, please make sure that
 pre-calculated conversion parameters can be found in cache (or even better - in CPU
 registers) each time they are needed. Only in this case will the conversion procedure
 be really efficient
