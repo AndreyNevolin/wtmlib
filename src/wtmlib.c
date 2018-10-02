@@ -764,7 +764,7 @@ static int wtmlib_CalcTSCEnclosingRangeCPUSW( int num_cpus,
     }
 
     WTMLIB_OUT( "\n\t\tShift between TSC on any of the available CPUs and TSC on the "
-						    "base CPU belongs to range: [%ld, %ld]\n", l_bound, u_bound);
+                "base CPU belongs to range: [%ld, %ld]\n", l_bound, u_bound);
     WTMLIB_OUT( "\t\tUpper bound for shifts between TSCs is: %ld\n", u_bound - l_bound);
 
     if ( range_size ) *range_size = u_bound - l_bound;
@@ -1363,14 +1363,14 @@ static void *wtmlib_TSCProbeThread( void *thread_arg)
         do
         {
             __atomic_load( seq_counter, &seq_num, __ATOMIC_ACQUIRE);
-						/* Mixing old-school __sync* built-in function with new-style __atomic* built-
-						   in functions doesn't look really nice. But unfortunately we need here a
-							 type of semantics that is not explicitly advertised by any of the __atomic*
-							 intrinsics. What we strive to achieve here is to prevent reordering of an
-							 asm statement hidden inside WTMLIB_GET_TSC() with the above
-							 __atomic_load(). Seems, explicit full memory barrier is the only way to go
-							 for now */
-						__sync_synchronize();
+            /* Mixing old-school __sync* built-in function with new-style __atomic* built-
+               in functions doesn't look really nice. But unfortunately we need here a
+               type of semantics that is not explicitly advertised by any of the __atomic*
+               intrinsics. What we strive to achieve here is to prevent reordering of an
+               asm statement hidden inside WTMLIB_GET_TSC() with the above
+              __atomic_load(). Seems, explicit full memory barrier is the only way to go
+              for now */
+            __sync_synchronize();
             tsc_val = WTMLIB_GET_TSC();
         } while ( !__atomic_compare_exchange_n( seq_counter, &seq_num, seq_num + 1, false,
                                                 __ATOMIC_ACQ_REL, __ATOMIC_RELAXED));
@@ -2112,7 +2112,7 @@ static int wtmlib_CalcTSCEnclosingRangeCOP( int num_cpus,
 
         CPU_SET_S( cpu_id, cpu_set_size, cpu_sets[1]);
         WTMLIB_OUT( "\n\t\tCollecting TSC probes on CPUs %d and %d...\n", base_cpu,
-										cpu_id);
+                    cpu_id);
         ret = wtmlib_CollectCASOrderedTSCProbes( 2, cpu_sets, num_cpus, tsc_probes,
                                                  WTMLIB_CALC_TSC_RANGE_PROBES_COUNT,
                                                  local_err_msg, sizeof( local_err_msg));
@@ -2154,7 +2154,7 @@ static int wtmlib_CalcTSCEnclosingRangeCOP( int num_cpus,
     }
 
     WTMLIB_OUT( "\n\t\tShift between TSC on any of the available CPUs and TSC on the "
-								"base CPU belongs to range: [%ld, %ld]\n", l_bound, u_bound);
+                "base CPU belongs to range: [%ld, %ld]\n", l_bound, u_bound);
     WTMLIB_OUT( "\t\tUpper bound for shifts between TSCs is: %ld\n", u_bound - l_bound);
 
     if ( range_size ) *range_size = u_bound - l_bound;
@@ -2695,7 +2695,7 @@ static int wtmlib_CalcTSCCountPerSecond( uint64_t time_period_usecs,
     }
 
     if ( tsc_count ) *tsc_count = (end_tsc_val - start_tsc_val) * 1000000000 /
-																	 elapsed_nsecs;
+                                  elapsed_nsecs;
 
     return 0;
 }
@@ -2766,7 +2766,6 @@ static int wtmlib_CalcFreeFromNoiseTSCPerSec( uint64_t *tsc_per_sec,
     WTMLIB_OUT( "\t\"Cleaning\" collected TSC-per-second values from random noise\n");
 
     /* Calculate "mean" and "standard deviation" of TSC-per-second observable value
-		 
        We use incremental formulas for computing both. Classical formulas are less
        stable. E.g. classical formula for calculating "mean" suffers from the
        necessity to summ up all the data points. That can result in overflow
