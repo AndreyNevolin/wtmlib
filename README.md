@@ -388,7 +388,9 @@ trusted value
 That's it. This section gives mostly outline of the algorithms implemented in WTMLIB.
 There is a lot of details, as always. Please, refer to the source code for the in-depth
 explanations. There is A LOT of comments in the code. You'll find there not only the
-detailed explanations of all the algorithms, but also some useful discussions.
+detailed explanations of all the algorithms, but also some useful discussions. Besides,
+in case you understand Russian, you may read this in-depth article about the library:
+[https://habr.com/post/425237/](https://habr.com/post/425237/)
 
 All the controls over the library (again, with the detailed explanations) can be found in
 [src/wtmlib_config.h](src/wtmlib_config.h).
