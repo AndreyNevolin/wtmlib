@@ -1334,7 +1334,7 @@ static void *wtmlib_TSCProbeThread( void *thread_arg)
         WTMLIB_BUFF_MSG( arg->err_msg, sizeof( arg->err_msg), "Couldn't bind itself "
                          "to a designated CPU");
 
-        return (void*)WTMLIB_RET_GENERIC_ERR;
+        return (void*)(long int)WTMLIB_RET_GENERIC_ERR;
     }
 
     /* At this point the thread is ready to collect TSC probes. But it doesn't start

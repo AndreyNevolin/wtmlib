@@ -12,6 +12,22 @@ OBJS = $(patsubst src/%.c, ${OBJDIR}/%.o, ${SRCS})
 
 GCC = g++ -std=c++0x -Wall -Werror -pthread $(BUILD_FLAGS)
 
+MACHINE_HARDWARE_NAME = $(shell uname -m)
+
+ifeq (${MACHINE_HARDWARE_NAME},x86_64)
+	HOST_ARCH = X86_64
+endif
+
+ifneq ($(filter ppc64%, ${MACHINE_HARDWARE_NAME}),)
+	HOST_ARCH = PPC_64
+endif
+
+ifndef HOST_ARCH
+$(error Architecture ${MACHINE_HARDWARE_NAME} is not supported)
+endif
+
+BUILD_FLAGS += -DWTMLIB_ARCH_${HOST_ARCH}
+
 .PHONY: clean
 
 default : BUILD_FLAGS += -s

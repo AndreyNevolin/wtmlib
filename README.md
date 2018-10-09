@@ -28,8 +28,8 @@ Here is a list of major capabilities provided by the library:
 2. reading current TSC value
 3. conversion of elapsed TSC ticks to nanoseconds
 
-The library builds on Linux only. Only x86 architecture is supported for now. Support for
-Power will follow.
+The library builds on Linux only. Supported hardware architectures: 64-bit x86 and 64-bit
+PowerPC.
 
 ## How to use
 The most typical scenario is the following:

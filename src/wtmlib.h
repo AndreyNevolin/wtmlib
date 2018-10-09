@@ -41,6 +41,7 @@
    work, because it can be potentially reordered with TSC-retrival ASM statement (again,
    unless proper dependencies are in place). C-language-supported barriers will work best
 */
+#ifdef WTMLIB_ARCH_X86_64
 #define WTMLIB_GET_TSC()                                          \
     ({                                                            \
         uint32_t _eax, _edx;                                      \
@@ -48,14 +49,45 @@
         __asm__ __volatile__( "rdtsc": "=a" (_eax), "=d" (_edx)); \
         ((uint64_t)_edx << 32U) | _eax;                           \
     })
+#elif WTMLIB_ARCH_PPC_64
+#define TBR 268
+#define WTMLIB_GET_TSC()                                                    \
+    ({                                                                      \
+        uint64_t _tbr_val;                                                  \
+                                                                            \
+        __asm__ __volatile__( "mfspr %0, %1": "=r" (_tbr_val): "i" (TBR));  \
+        _tbr_val;                                                           \
+    })
+#else /* None of supported architecture targets was defined */
+#define WTMLIB_GET_TSC() MUST_NOT_COMPILE
+#endif /* Architecture targets */
 #else /* __GNUC__ */
-static inline uint64_t WTMLIB_GET_TSC() {
+#ifdef WTMLIB_ARCH_X86_64
+static inline uint64_t WTMLIB_GET_TSC()
+{
     uint32_t eax, edx;
 
     __asm__ __volatile__( "rdtsc" : "=a" (eax), "=d" (edx));
 
     return ((uint64_t)edx << 32) | eax;
 }
+#elif WTMLIB_ARCH_PPC_64
+#define TBR 268
+
+static inline uint64_t WTMLIB_GET_TSC()
+{
+    uint64_t _tbr_val;
+
+    __asm__ __volatile__( "mfspr %0, %1": "=r" (_tbr_val): "i" (TBR));
+
+    return _tbr_val;
+}
+#else /* None of supported architecture targets was defined */
+static inline uint64_t WTMLIB_GET_TSC()
+{
+    MUST_NOT_COMPILE;
+}
+#endif /* Architecture targets */
 #endif /* __GNUC__ */
 
 /**
