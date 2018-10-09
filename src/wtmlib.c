@@ -3118,7 +3118,8 @@ static int wtmlib_CalcTimeBeforeTSCWrap( wtmlib_TSCConversionParams_t *conv_para
     if ( cpu_id < ps_state.num_cpus ) return WTMLIB_RET_GENERIC_ERR;
 
     WTMLIB_OUT( "\t\tThe maximum TSC value: %lu\n", max_tsc_val);
-    secs_before_wrap = WTMLIB_TSC_TO_NSEC( max_tsc_val, conv_params) / 1000000000;
+    secs_before_wrap = WTMLIB_TSC_TO_NSEC( UINT64_MAX - max_tsc_val, conv_params) /
+                       1000000000;
     WTMLIB_OUT( "\t\tSeconds before the maximum TSC will wrap: %lu\n", secs_before_wrap);
     ret = wtmlib_RestoreInitialProcState( &ps_state, local_err_msg,
                                           sizeof( local_err_msg));
