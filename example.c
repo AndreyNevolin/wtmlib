@@ -138,7 +138,7 @@ int main()
 
     fprintf( stdout, "Getting TSC-to-nanoseconds conversion parameters...\n");
     ret = wtmlib_GetTSCToNsecConversionParams( &conv_params, &secs_before_wrap, err_msg,
-                                                sizeof( err_msg));
+                                               sizeof( err_msg));
 
     if ( ret )
     {
@@ -167,6 +167,7 @@ int main()
                  conv_params.tsc_remainder_bitmask);
         fprintf( stdout, "\tMultiplicator: %lu\n", conv_params.mult);
         fprintf( stdout, "\tShift: %d\n", conv_params.shift);
+        fprintf( stdout, "\tTSC ticks per second: %lu\n", conv_params.tsc_ticks_per_sec);
         fprintf( stdout, "\tSeconds before the earliest TSC wrap: %lu\n\n",
                  secs_before_wrap);
     }

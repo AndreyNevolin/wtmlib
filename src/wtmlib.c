@@ -3041,6 +3041,7 @@ static int wtmlib_CalcTSCToNsecConversionParams( uint64_t tsc_per_sec,
         conv_params_ret->nsecs_per_tsc_modulus = nsecs_per_tsc_modulus;
         conv_params_ret->tsc_remainder_length = tsc_remainder_length;
         conv_params_ret->tsc_remainder_bitmask = tsc_remainder_bitmask;
+        conv_params_ret->tsc_ticks_per_sec = tsc_per_sec;
     }
 
     return 0;
@@ -3155,7 +3156,8 @@ int wtmlib_GetTSCToNsecConversionParams( wtmlib_TSCConversionParams_t *conv_para
     wtmlib_TSCConversionParams_t conv_params = {.mult = 0, .shift = 0,
                                                 .nsecs_per_tsc_modulus = 0,
                                                 .tsc_remainder_length = -1,
-                                                .tsc_remainder_bitmask = 0};
+                                                .tsc_remainder_bitmask = 0,
+                                                .tsc_ticks_per_sec = 0};
     char local_err_msg[WTMLIB_MAX_ERR_MSG_SIZE] = "";
 
     WTMLIB_OUT( "Calculating TSC-to-nanoseconds conversion parameters...\n");

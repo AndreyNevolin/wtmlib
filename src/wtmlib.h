@@ -109,6 +109,10 @@ typedef struct
     /* A bitmask used to extract TSC remainder:
        tsc_remainder = tsc_ticks & tsc_remainder_bitmask */
     uint64_t tsc_remainder_bitmask;
+    /* Number of TSC ticks per second. The parameter is intended for clients willing to
+       convert TSC ticks to (nano)seconds by means of simple division (either integer or
+       floating-point) */
+    uint64_t tsc_ticks_per_sec;
 } wtmlib_TSCConversionParams_t;
 
 /**
