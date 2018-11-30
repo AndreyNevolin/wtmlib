@@ -8,6 +8,11 @@
  * Header file of the library. Contains all external declarations
  */
 
+#ifndef _WTMLIB_H_
+#define _WTMLIB_H_
+
+#include <stdint.h>
+
 #include <pthread.h>
 
 /**
@@ -250,3 +255,5 @@ int wtmlib_EvalTSCReliabilityCOP( int64_t *tsc_range_length, bool *is_monotonic,
 int wtmlib_GetTSCToNsecConversionParams( wtmlib_TSCConversionParams_t *conv_params,
                                          uint64_t *secs_before_wrap_ret, char *err_msg,
                                          int err_msg_size);
+
+#endif /* _WTMLIB_H_ */
